@@ -1,0 +1,6 @@
+@VisitSystem_HostAddress = http://localhost:5173
+
+GET {{VisitSystem_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
