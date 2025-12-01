@@ -29,7 +29,11 @@ namespace VisitSystem.Controllers
         {
             if (await _context.Users.AnyAsync(u => u.Username == request.Username))
             {
-                return BadRequest("El usuario ya existe.");
+                return BadRequest(new
+                {
+                    message = "El usuario ya existe." 
+                });
+               
             }
 
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -62,7 +66,10 @@ namespace VisitSystem.Controllers
 
             if (user == null || !VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
-                return BadRequest("Credenciales incorrectas.");
+                return BadRequest(new
+                {
+                    message = "Credenciales incorrectas." 
+                });
             }
 
             string token = CreateToken(user);
