@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using VisitSystem.Data;
+using VisitSystem.DTOs;
 using VisitSystem.Models;
 using VisitSystem.Services;
 
 namespace VisitSystem.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class VisitantesController : ControllerBase

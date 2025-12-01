@@ -1,4 +1,4 @@
-﻿namespace VisitSystem.Models
+﻿namespace VisitSystem.DTOs
 {
     public class RegisterVisitorDto
     {

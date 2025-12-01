@@ -10,5 +10,6 @@ namespace VisitSystem.Data
 
         public DbSet<Visitor> Visitors { get; set; }
         public DbSet<VisitRecord> VisitRecords { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
