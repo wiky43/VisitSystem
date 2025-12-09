@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -23,17 +24,13 @@ namespace VisitSystem.Controllers
             _configuration = configuration;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("register")]
-        
         public async Task<ActionResult<UserResponseDto>> Register(UserDto request)
         {
             if (await _context.Users.AnyAsync(u => u.Username == request.Username))
             {
-                return BadRequest(new
-                {
-                    message = "El usuario ya existe." 
-                });
-               
+                return BadRequest(new { message = "El usuario ya existe." });
             }
 
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -42,13 +39,13 @@ namespace VisitSystem.Controllers
             {
                 Username = request.Username,
                 PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt
+                PasswordSalt = passwordSalt,
+                Role = request.Role,
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            
             var responseDto = new UserResponseDto
             {
                 Id = user.Id,
@@ -59,42 +56,42 @@ namespace VisitSystem.Controllers
         }
 
         [HttpPost("login")]
-        
         public async Task<ActionResult<AuthResponseDto>> Login(UserDto request)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
 
             if (user == null || !VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
-                return BadRequest(new
-                {
-                    message = "Credenciales incorrectas." 
-                });
+                return BadRequest(new { message = "Credenciales incorrectas." });
+            }
+
+            if (user.Role != "Admin" && user.Role != "Recepcionista")
+            {
+                return Unauthorized(new { message = "Rol de usuario no autorizado para el sistema." });
             }
 
             string token = CreateToken(user);
 
-            
             var response = new AuthResponseDto
             {
                 Token = token,
                 UserId = user.Id,
-                Username = user.Username
+                Username = user.Username,
+                Role = user.Role 
             };
 
             return Ok(response);
         }
-
 
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim("UserId", user.Id.ToString()) 
+                new Claim("UserId", user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
-            
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 _configuration.GetSection("Jwt:Key").Value!));
 
@@ -102,7 +99,7 @@ namespace VisitSystem.Controllers
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddDays(1), 
+                expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds,
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"]

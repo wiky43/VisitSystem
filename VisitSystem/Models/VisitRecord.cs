@@ -7,7 +7,9 @@
         public string Visitado { get; set; }
         public string Motivo { get; set; }
         public string Departamento { get; set; }
-        public DateTime FechaHora { get; set; } = DateTime.Now;
+        public DateTime HoraEntrada { get; set; } = DateTime.Now;
+        public DateTime? HoraSalida { get; set; }
+
         public string Codigo { get; set; } // Ej: VST-1023
     }
 }

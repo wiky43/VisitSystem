@@ -59,8 +59,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("VisitSystemDb")
     );
 });
+builder.Services.AddScoped<IReporteService, ReporteService>();
+
+builder.Services.AddSingleton<EmailSender>();
+builder.Services.AddHostedService<ReporteDiarioService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IPrintManager, PrintManager>();
+builder.Services.AddScoped<IExportService, ExportService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

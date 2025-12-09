@@ -14,8 +14,9 @@ namespace VisitSystem.Services
 
             ticket.Lineas.Add($"Nombre: {visita.Visitor.Nombre}");
             ticket.Lineas.Add($"Motivo: {visita.Motivo}");
+            ticket.Lineas.Add($"Visitado:{visita.Visitado}");
             ticket.Lineas.Add($"Departamento: {visita.Departamento}");
-            ticket.Lineas.Add($"Fecha: {visita.FechaHora:dd/MM/yyyy hh:mm tt}");
+            ticket.Lineas.Add($"Fecha: {visita.HoraEntrada:dd/MM/yyyy hh:mm tt}");
             ticket.Lineas.Add($"Código: {visita.Codigo}");
 
             return ticket;

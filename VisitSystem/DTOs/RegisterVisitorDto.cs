@@ -8,5 +8,6 @@
         public string Visitado { get; set; }
         public string Motivo { get; set; }
         public string Departamento { get; set; }
+        public DateTime HoraEntrada { get; set; }
     }
 }
